@@ -1,18 +1,8 @@
 ///<reference path="Scripts/d3.d.ts" />
 ///<reference path="Scripts/jquery-1.8.3.d.ts" />
-///<reference path="app.ts" />
+///<reference path="interpreter.ts" />
 
 module UI {
-    var d3trees = {};
-    var globi = 0;
-
-    function getTreeData(d3svg: JQuery) {
-        return d3svg.data('treeId');
-    }
-
-    function setTreeData(d3svg: JQuery, data) {
-        return d3svg.data('treeId', data);
-    }
 
     function children(n: Interpreter.Tree) {
         var ret = [];
@@ -59,12 +49,16 @@ module UI {
         var diagonal = d3.svg.diagonal();
         var nodes = treeLayout.nodes(tree);       
         
+        // very important
+        tree.annotateIds('');
+
         var node = vis.selectAll('g.node')
-            .data(nodes, d => d.id());
+            .data(nodes, d => d.id);
 
         var nodeEnter = node.enter().append('g')
             .attr('class', 'node')
-            .attr('transform', d => translate(d.x, d.y));
+            .attr('transform', d => translate(d.x, d.y))
+            .style('opacity', 0);
 
         nodeEnter.append('circle')
             .attr('r', 5)
@@ -72,20 +66,23 @@ module UI {
 
         var nodeUpdate = node.transition()
             .duration(duration)
-            .attr('transform', d => translate(d.x, d.y));
+            .attr('transform', d => translate(d.x, d.y))
+            .style('opacity', 1);
 
         var nodeExit = node.exit().remove();
         
         var link = vis.selectAll('path.link')
-            .data(treeLayout.links(nodes), d => d.source.id() + '_' + d.target.id());
+            .data(treeLayout.links(nodes), d => d.source.id + '_' + d.target.id);
         
         var linkEnter = link.enter().insert('path', 'g')
             .attr('class', 'link')
-            .attr('d', diagonal);
+            .attr('d', diagonal)
+            .style('opacity', 0);
 
         var linkUpate = link.transition()
             .duration(duration)
-            .attr('d', diagonal);
+            .attr('d', diagonal)
+            .style('opacity', 1);
 
         var linkExit = link.exit().remove();
 

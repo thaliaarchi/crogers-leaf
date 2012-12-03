@@ -1,14 +1,16 @@
-﻿body
-{
-    font-family: 'Segoe UI', sans-serif
-}
-
-span {
-    font-style: italic
-}
-
-.link {
+﻿.link {
     stroke: #ccc;
     stroke-width: 1.5px;
     fill: none;
+}
+
+.leaf-box .cont, .leaf-box textarea {
+    height: 700px;
+}
+
+.leaf-box textarea {
+    box-sizing: border-box;
+    width: 100%;
+    font-family: 'Consolas', monospace;
+    font-size: 16px;
 }

@@ -1,14 +1,5 @@
 var UI;
 (function (UI) {
-    var d3trees = {
-    };
-    var globi = 0;
-    function getTreeData(d3svg) {
-        return d3svg.data('treeId');
-    }
-    function setTreeData(d3svg, data) {
-        return d3svg.data('treeId', data);
-    }
     function children(n) {
         var ret = [];
         if(n.left) {
@@ -46,22 +37,23 @@ var UI;
         var duration = 500;
         var diagonal = d3.svg.diagonal();
         var nodes = treeLayout.nodes(tree);
+        tree.annotateIds('');
         var node = vis.selectAll('g.node').data(nodes, function (d) {
-            return d.id();
+            return d.id;
         });
         var nodeEnter = node.enter().append('g').attr('class', 'node').attr('transform', function (d) {
             return translate(d.x, d.y);
-        });
+        }).style('opacity', 0);
         nodeEnter.append('circle').attr('r', 5).style('fill', '#000');
         var nodeUpdate = node.transition().duration(duration).attr('transform', function (d) {
             return translate(d.x, d.y);
-        });
+        }).style('opacity', 1);
         var nodeExit = node.exit().remove();
         var link = vis.selectAll('path.link').data(treeLayout.links(nodes), function (d) {
-            return d.source.id() + '_' + d.target.id();
+            return d.source.id + '_' + d.target.id;
         });
-        var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal);
-        var linkUpate = link.transition().duration(duration).attr('d', diagonal);
+        var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal).style('opacity', 0);
+        var linkUpate = link.transition().duration(duration).attr('d', diagonal).style('opacity', 1);
         var linkExit = link.exit().remove();
         return visData;
     }
