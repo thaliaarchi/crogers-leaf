@@ -11,11 +11,18 @@ $(document).ready(function () {
             v = UI.resizeTreeBox(v, $cont.width(), $cont.height());
         });
     });
-    Mousetrap.bind('shift', function (e) {
+    Mousetrap.bind('alt', function (e) {
         var $focused = $('*:focus');
         if($focused.is('textarea')) {
             $focused.trigger('compile');
         }
     });
+    var resize = function () {
+        var h = $(window).height() - $('#toprow').height() - 50;
+        $('.leaf-box textarea').height(h);
+        $('.leaf-box .cont').height(h);
+    };
+    $(window).resize(resize);
+    resize();
 });
 //@ sourceMappingURL=app.js.map

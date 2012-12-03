@@ -17,10 +17,22 @@ $(document).ready(() => {
         });
     });
 
-    Mousetrap.bind('shift', (e) => {
+    // Catch recompile keyboard events
+    Mousetrap.bind('alt', (e) => {
         var $focused = $('*:focus');
         if ($focused.is('textarea')) {
             $focused.trigger('compile');
         }
     });
+
+    // Resize stuff so it fills the whole screen
+    var resize = () => {
+        var h = $(window).height() - $('#toprow').height() - 50;
+        $('.leaf-box textarea').height(h);
+        $('.leaf-box .cont').height(h);
+
+    };
+    
+    $(window).resize(resize);
+    resize();
 });
