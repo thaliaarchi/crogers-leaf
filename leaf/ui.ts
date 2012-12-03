@@ -36,9 +36,23 @@ module UI {
             .children(children)
             .size([w-gap2, h-gap2]);
 
-        var visData = { treeLayout: treeLayout, vis: vis };
+        var visData = { gap: gap, treeLayout: treeLayout, svg: svg, vis: vis, lastTree: undefined };
 
         return updateTree(visData, tree);
+    }
+
+    export function resizeTreeBox(visData, w, h) {
+        var gap = visData.gap;
+        
+        visData.treeLayout = d3.layout.tree()
+            .children(children)
+            .size([w-gap*2, h-gap*2]);
+
+        visData.svg
+            .attr('width', w)
+            .attr('height', h);
+
+        return updateTree(visData, visData.lastTree);
     }
 
     export function updateTree(visData, tree: Interpreter.Tree) {
@@ -86,6 +100,7 @@ module UI {
 
         var linkExit = link.exit().remove();
 
+        visData.lastTree = tree;
         return visData;
     }
 }

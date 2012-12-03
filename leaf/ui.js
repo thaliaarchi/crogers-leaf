@@ -25,12 +25,25 @@ var UI;
             h - gap2
         ]);
         var visData = {
+            gap: gap,
             treeLayout: treeLayout,
-            vis: vis
+            svg: svg,
+            vis: vis,
+            lastTree: undefined
         };
         return updateTree(visData, tree);
     }
     UI.drawTree = drawTree;
+    function resizeTreeBox(visData, w, h) {
+        var gap = visData.gap;
+        visData.treeLayout = d3.layout.tree().children(children).size([
+            w - gap * 2, 
+            h - gap * 2
+        ]);
+        visData.svg.attr('width', w).attr('height', h);
+        return updateTree(visData, visData.lastTree);
+    }
+    UI.resizeTreeBox = resizeTreeBox;
     function updateTree(visData, tree) {
         var treeLayout = visData.treeLayout;
         var vis = visData.vis;
@@ -55,6 +68,7 @@ var UI;
         var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal).style('opacity', 0);
         var linkUpate = link.transition().duration(duration).attr('d', diagonal).style('opacity', 1);
         var linkExit = link.exit().remove();
+        visData.lastTree = tree;
         return visData;
     }
     UI.updateTree = updateTree;
