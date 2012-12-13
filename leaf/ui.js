@@ -50,7 +50,7 @@ var UI;
         var duration = 500;
         var diagonal = d3.svg.diagonal();
         var nodes = treeLayout.nodes(tree);
-        tree.annotateIds('');
+        tree.annotateIds();
         var node = vis.selectAll('g.node').data(nodes, function (d) {
             return d.id;
         });

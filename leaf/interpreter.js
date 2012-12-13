@@ -13,14 +13,17 @@ var Interpreter;
             tree.parent = this;
             this.right = tree;
         };
-        Tree.prototype.annotateIds = function (prefix) {
+        Tree.prototype.annotateIdsInternal = function (prefix) {
             this.id = prefix;
             if(this.left) {
-                this.left.annotateIds(prefix + 'L');
+                this.left.annotateIdsInternal(prefix + 'L');
             }
             if(this.right) {
-                this.right.annotateIds(prefix + 'R');
+                this.right.annotateIdsInternal(prefix + 'R');
             }
+        };
+        Tree.prototype.annotateIds = function () {
+            return this.annotateIdsInternal('');
         };
         Tree.empty = function empty() {
             return new Tree();
@@ -28,6 +31,21 @@ var Interpreter;
         return Tree;
     })();
     Interpreter.Tree = Tree;    
+    var State = (function () {
+        function State(code) {
+            this.finished = false;
+            this.code = code;
+            this.i = 0;
+            this.whileStack = [];
+            this.tree = Tree.empty();
+            this.origTree = this.tree;
+            this.rootStack = [
+                this.tree
+            ];
+        }
+        return State;
+    })();
+    Interpreter.State = State;    
     function intToTree(n) {
         var tree = Tree.empty();
         var root = tree;
@@ -78,89 +96,91 @@ var Interpreter;
         }
     }
     Interpreter.structureToTree = structureToTree;
-    function run(code) {
-        var tree = Tree.empty();
-        var origRoot = tree;
-        var rootStack = [
-            tree
-        ];
-        var whileStack = [];
-        var r;
-        for(var i = 0; i < code.length; i++) {
-            var lastr = r;
-            r = null;
-            switch(code[i]) {
-                case '<': {
-                    if(r = tree.left) {
-                        tree = tree.left;
+    function step(s) {
+        if(s.finished || s.i >= s.code.length) {
+            s.finished = true;
+            return s;
+        }
+        switch(s.code[s.i]) {
+            case '<': {
+                if(s.r = s.tree.left) {
+                    s.tree = s.tree.left;
+                }
+                break;
+
+            }
+            case '>': {
+                if(s.r = s.tree.right) {
+                    s.tree = s.tree.right;
+                }
+                break;
+
+            }
+            case '^': {
+                if(s.r = s.tree.parent && s.tree !== peek(s.rootStack)) {
+                    s.tree = s.tree.parent;
+                }
+                break;
+
+            }
+            case '{': {
+                s.rootStack.push(s.tree);
+                break;
+
+            }
+            case '}': {
+                s.rootStack.pop();
+                break;
+
+            }
+            case '(': {
+                s.whileStack.push(s.i);
+                break;
+
+            }
+            case ')': {
+                if(s.r) {
+                    s.i = s.whileStack[s.whileStack.length - 1];
+                } else {
+                    s.whileStack.pop();
+                }
+                break;
+
+            }
+            case '+': {
+                s.tree.setLeft(Tree.empty());
+                break;
+
+            }
+            case '*': {
+                s.tree.setRight(Tree.empty());
+                break;
+
+            }
+            case '-': {
+                var deleted = s.tree;
+                s.tree = s.tree.parent;
+                if(s.tree.left === deleted) {
+                    s.tree.left = null;
+                } else {
+                    if(s.tree.right === deleted) {
+                        s.tree.right = null;
                     }
-                    break;
-
                 }
-                case '>': {
-                    if(r = tree.right) {
-                        tree = tree.right;
-                    }
-                    break;
+                break;
 
-                }
-                case '^': {
-                    if(r = tree.parent && tree !== peek(rootStack)) {
-                        tree = tree.parent;
-                    }
-                    break;
-
-                }
-                case '{': {
-                    rootStack.push(tree);
-                    break;
-
-                }
-                case '}': {
-                    rootStack.pop();
-                    break;
-
-                }
-                case '(': {
-                    whileStack.push(i);
-                    break;
-
-                }
-                case ')': {
-                    if(lastr) {
-                        i = whileStack[whileStack.length - 1];
-                    } else {
-                        whileStack.pop();
-                    }
-                    break;
-
-                }
-                case '+': {
-                    tree.setLeft(Tree.empty());
-                    break;
-
-                }
-                case '*': {
-                    tree.setRight(Tree.empty());
-                    break;
-
-                }
-                case '-': {
-                    var deleted = tree;
-                    tree = tree.parent;
-                    if(tree.left === deleted) {
-                        tree.left = null;
-                    } else {
-                        if(tree.right === deleted) {
-                            tree.right = null;
-                        }
-                    }
-                    break;
-
-                }
             }
         }
-        return origRoot;
+        s.i++;
+        return s;
+    }
+    Interpreter.step = step;
+    function run(code) {
+        var s = new State(code);
+        while(!s.finished) {
+            s = step(s);
+        }
+        return s;
     }
     Interpreter.run = run;
 })(Interpreter || (Interpreter = {}));

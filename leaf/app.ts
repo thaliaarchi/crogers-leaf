@@ -8,9 +8,9 @@ $(document).ready(() => {
         var $e = $(e);
         var $cont = $e.children('.cont');
         var $codebox = $e.find('textarea');
-        var v = UI.drawTree($cont, Interpreter.run($codebox.val()));
+        var v = UI.drawTree($cont, Interpreter.run($codebox.val()).origTree);
         $codebox.bind('compile', e => {
-            v = UI.updateTree(v, Interpreter.run($codebox.val()));
+            v = UI.updateTree(v, Interpreter.run($codebox.val()).origTree);
         });
         $cont.resize(() => {
             v = UI.resizeTreeBox(v, $cont.width(), $cont.height());
@@ -18,7 +18,7 @@ $(document).ready(() => {
     });
 
     // Catch recompile keyboard events
-    Mousetrap.bind('alt', (e) => {
+    Mousetrap.bind('ctrl+alt', (e) => {
         var $focused = $('*:focus');
         if ($focused.is('textarea')) {
             $focused.trigger('compile');
@@ -27,7 +27,7 @@ $(document).ready(() => {
 
     // Resize stuff so it fills the whole screen
     var resize = () => {
-        var h = $(window).height() - $('#toprow').height() - 50;
+        var h = $(window).height() - $('#toprow').height() - 70;
         $('.leaf-box textarea').height(h);
         $('.leaf-box .cont').height(h);
 

@@ -64,7 +64,7 @@ module UI {
         var nodes = treeLayout.nodes(tree);       
         
         // very important
-        tree.annotateIds('');
+        tree.annotateIds();
 
         var node = vis.selectAll('g.node')
             .data(nodes, d => d.id);
