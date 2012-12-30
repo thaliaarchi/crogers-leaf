@@ -8,9 +8,9 @@ $(document).ready(() => {
         var $e = $(e);
         var $cont = $e.children('.cont');
         var $codebox = $e.find('textarea');
-        var v = UI.drawTree($cont, Interpreter.run($codebox.val()).origTree);
+        var v = UI.drawTree($cont, Interpreter.run($codebox.val()));
         $codebox.bind('compile', e => {
-            v = UI.updateTree(v, Interpreter.run($codebox.val()).origTree);
+            v = UI.updateTree(v, Interpreter.run($codebox.val()));
         });
         $cont.resize(() => {
             v = UI.resizeTreeBox(v, $cont.width(), $cont.height());
@@ -27,9 +27,14 @@ $(document).ready(() => {
 
     // Resize stuff so it fills the whole screen
     var resize = () => {
-        var h = $(window).height() - $('#toprow').height() - 70;
-        $('.leaf-box textarea').height(h);
-        $('.leaf-box .cont').height(h);
+        var rowHeights = 0;
+        $('.row-fluid').map((i, e) => {
+            var $e = $(e);
+            rowHeights += $e.children('#test').length === 0 ? $e.height() : 0;
+        });
+        var h = $(window).height() - rowHeights - 70;
+        $('#test textarea').height(h);
+        $('#test .cont').height(h);
 
     };
     

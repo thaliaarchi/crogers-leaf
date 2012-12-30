@@ -20,17 +20,19 @@ module Interpreter {
             this.right = tree;
         }
 
-        private annotateIdsInternal(prefix:string) {
+        private annotateIdsInternal(prefix:string, selectedTree: Tree) {
             this.id = prefix;
+            if (this === selectedTree)
+                this.id += 'S';
             if (this.left)
-                this.left.annotateIdsInternal(prefix + 'L');
+                this.left.annotateIdsInternal(prefix + 'L', selectedTree);
             if (this.right)
-                this.right.annotateIdsInternal(prefix + 'R');
+                this.right.annotateIdsInternal(prefix + 'R', selectedTree);
 
         }
 
-        public annotateIds() {
-            return this.annotateIdsInternal('');
+        public annotateIds(selectedTree: Tree) {
+            return this.annotateIdsInternal('', selectedTree);
         }
 
         static empty() { return new Tree(); }
@@ -99,6 +101,21 @@ module Interpreter {
             return stringToTree(x);
     }
 
+    function seek(str: string, startpos: number, char: string): number {
+        var depth = 0;
+        for (var i = startpos; i < str.length; i++) {
+            var c = str[i];
+            if (c === '(') 
+                depth++;
+            else if (depth > 0 && c === ')')
+                depth--;
+            else if (c === char)
+                return i;
+        }
+
+        return -1;
+    }
+
     export function step(s: State) {
         if (s.finished || s.i >= s.code.length) {
             s.finished = true;
@@ -127,6 +144,7 @@ module Interpreter {
 
             case '}':
                 s.rootStack.pop();
+                s.r = true;
                 break;
 
             case '(':
@@ -138,23 +156,33 @@ module Interpreter {
                     s.i = s.whileStack[s.whileStack.length - 1];
                 else
                     s.whileStack.pop();
+                s.r = true;
                 break;
 
             case '+':
                 s.tree.setLeft(Tree.empty());
+                s.r = true;
                 break;
 
             case '*':
                 s.tree.setRight(Tree.empty());
+                s.r = true;
                 break;
 
             case '-':
                 var deleted = s.tree;
                 s.tree = s.tree.parent;
-                if (s.tree.left === deleted)
+                s.r = s.tree.parent;
+                if (s.tree && s.tree.left === deleted)
                     s.tree.left = null;
                 else if (s.tree.right === deleted)
                     s.tree.right = null;
+                break;
+            
+            case '?':
+                s.r = peek(s.rootStack) === s.tree;
+                if (s.r)
+                    s.i = seek(s.code, s.i + 1, ')');
                 break;
         }
 

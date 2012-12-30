@@ -13,7 +13,8 @@ var UI;
     function translate(x, y) {
         return 'translate(' + x + ',' + y + ')';
     }
-    function drawTree(d3container, tree) {
+    function drawTree(d3container, state) {
+        var tree = state.origTree;
         var w = d3container.width();
         var h = d3container.height();
         var gap = 7;
@@ -29,9 +30,9 @@ var UI;
             treeLayout: treeLayout,
             svg: svg,
             vis: vis,
-            lastTree: undefined
+            lastState: state
         };
-        return updateTree(visData, tree);
+        return updateTree(visData, state);
     }
     UI.drawTree = drawTree;
     function resizeTreeBox(visData, w, h) {
@@ -41,26 +42,31 @@ var UI;
             h - gap * 2
         ]);
         visData.svg.attr('width', w).attr('height', h);
-        return updateTree(visData, visData.lastTree);
+        return updateTree(visData, visData.lastState);
     }
     UI.resizeTreeBox = resizeTreeBox;
-    function updateTree(visData, tree) {
+    function updateTree(visData, state) {
+        var tree = state.origTree;
         var treeLayout = visData.treeLayout;
         var vis = visData.vis;
         var duration = 500;
         var diagonal = d3.svg.diagonal();
         var nodes = treeLayout.nodes(tree);
-        tree.annotateIds();
+        tree.annotateIds(state.tree);
         var node = vis.selectAll('g.node').data(nodes, function (d) {
             return d.id;
         });
         var nodeEnter = node.enter().append('g').attr('class', 'node').attr('transform', function (d) {
             return translate(d.x, d.y);
         }).style('opacity', 0);
-        nodeEnter.append('circle').attr('r', 5).style('fill', '#000');
+        nodeEnter.append('circle').attr('r', 5).style('fill', function (n) {
+            return n === state.tree ? 'green' : 'black';
+        });
         var nodeUpdate = node.transition().duration(duration).attr('transform', function (d) {
             return translate(d.x, d.y);
-        }).style('opacity', 1);
+        }).style('opacity', 1).style('fill', function (n) {
+            return n === state.tree ? 'green' : 'black';
+        });
         var nodeExit = node.exit().remove();
         var link = vis.selectAll('path.link').data(treeLayout.links(nodes), function (d) {
             return d.source.id + '_' + d.target.id;
@@ -68,7 +74,7 @@ var UI;
         var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal).style('opacity', 0);
         var linkUpate = link.transition().duration(duration).attr('d', diagonal).style('opacity', 1);
         var linkExit = link.exit().remove();
-        visData.lastTree = tree;
+        visData.lastState = state;
         return visData;
     }
     UI.updateTree = updateTree;

@@ -13,17 +13,20 @@ var Interpreter;
             tree.parent = this;
             this.right = tree;
         };
-        Tree.prototype.annotateIdsInternal = function (prefix) {
+        Tree.prototype.annotateIdsInternal = function (prefix, selectedTree) {
             this.id = prefix;
+            if(this === selectedTree) {
+                this.id += 'S';
+            }
             if(this.left) {
-                this.left.annotateIdsInternal(prefix + 'L');
+                this.left.annotateIdsInternal(prefix + 'L', selectedTree);
             }
             if(this.right) {
-                this.right.annotateIdsInternal(prefix + 'R');
+                this.right.annotateIdsInternal(prefix + 'R', selectedTree);
             }
         };
-        Tree.prototype.annotateIds = function () {
-            return this.annotateIdsInternal('');
+        Tree.prototype.annotateIds = function (selectedTree) {
+            return this.annotateIdsInternal('', selectedTree);
         };
         Tree.empty = function empty() {
             return new Tree();
@@ -96,6 +99,24 @@ var Interpreter;
         }
     }
     Interpreter.structureToTree = structureToTree;
+    function seek(str, startpos, char) {
+        var depth = 0;
+        for(var i = startpos; i < str.length; i++) {
+            var c = str[i];
+            if(c === '(') {
+                depth++;
+            } else {
+                if(depth > 0 && c === ')') {
+                    depth--;
+                } else {
+                    if(c === char) {
+                        return i;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
     function step(s) {
         if(s.finished || s.i >= s.code.length) {
             s.finished = true;
@@ -130,6 +151,7 @@ var Interpreter;
             }
             case '}': {
                 s.rootStack.pop();
+                s.r = true;
                 break;
 
             }
@@ -144,28 +166,40 @@ var Interpreter;
                 } else {
                     s.whileStack.pop();
                 }
+                s.r = true;
                 break;
 
             }
             case '+': {
                 s.tree.setLeft(Tree.empty());
+                s.r = true;
                 break;
 
             }
             case '*': {
                 s.tree.setRight(Tree.empty());
+                s.r = true;
                 break;
 
             }
             case '-': {
                 var deleted = s.tree;
                 s.tree = s.tree.parent;
-                if(s.tree.left === deleted) {
+                s.r = s.tree.parent;
+                if(s.tree && s.tree.left === deleted) {
                     s.tree.left = null;
                 } else {
                     if(s.tree.right === deleted) {
                         s.tree.right = null;
                     }
+                }
+                break;
+
+            }
+            case '?': {
+                s.r = peek(s.rootStack) === s.tree;
+                if(s.r) {
+                    s.i = seek(s.code, s.i + 1, ')');
                 }
                 break;
 

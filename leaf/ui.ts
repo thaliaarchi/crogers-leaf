@@ -17,7 +17,8 @@ module UI {
         return 'translate(' + x + ',' + y + ')';
     }
 
-    export function drawTree(d3container: JQuery, tree: Interpreter.Tree) {
+    export function drawTree(d3container: JQuery, state: Interpreter.State) {
+        var tree = state.origTree;
 
         var w = d3container.width();
         var h = d3container.height();
@@ -36,9 +37,9 @@ module UI {
             .children(children)
             .size([w-gap2, h-gap2]);
 
-        var visData = { gap: gap, treeLayout: treeLayout, svg: svg, vis: vis, lastTree: undefined };
+        var visData = { gap: gap, treeLayout: treeLayout, svg: svg, vis: vis, lastState: state };
 
-        return updateTree(visData, tree);
+        return updateTree(visData, state);
     }
 
     export function resizeTreeBox(visData, w, h) {
@@ -52,10 +53,12 @@ module UI {
             .attr('width', w)
             .attr('height', h);
 
-        return updateTree(visData, visData.lastTree);
+        return updateTree(visData, visData.lastState);
     }
 
-    export function updateTree(visData, tree: Interpreter.Tree) {
+    export function updateTree(visData, state: Interpreter.State) {
+        var tree = state.origTree;
+
         var treeLayout = visData.treeLayout;
         var vis = visData.vis;
         var duration = 500;
@@ -64,7 +67,7 @@ module UI {
         var nodes = treeLayout.nodes(tree);       
         
         // very important
-        tree.annotateIds();
+        tree.annotateIds(state.tree);
 
         var node = vis.selectAll('g.node')
             .data(nodes, d => d.id);
@@ -76,12 +79,13 @@ module UI {
 
         nodeEnter.append('circle')
             .attr('r', 5)
-            .style('fill', '#000');
+            .style('fill', n => n === state.tree ? 'green' : 'black');
 
         var nodeUpdate = node.transition()
             .duration(duration)
             .attr('transform', d => translate(d.x, d.y))
-            .style('opacity', 1);
+            .style('opacity', 1)
+            .style('fill', n => n === state.tree ? 'green' : 'black');
 
         var nodeExit = node.exit().remove();
         
@@ -100,7 +104,7 @@ module UI {
 
         var linkExit = link.exit().remove();
 
-        visData.lastTree = tree;
+        visData.lastState = state;
         return visData;
     }
 }
