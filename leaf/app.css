@@ -4,8 +4,8 @@
     fill: none;
 }
 
-.leaf-box .cont, .leaf-box textarea {
-    height: 700px;
+.leaf-box {
+    padding: 10px 0;
 }
 
 .leaf-box textarea {
@@ -13,6 +13,10 @@
     width: 100%;
     font-family: 'Consolas', monospace;
     font-size: 16px;
+}
+
+.leaf-box .below-group {
+    padding-top: 10px;
 }
 
 #toprow {

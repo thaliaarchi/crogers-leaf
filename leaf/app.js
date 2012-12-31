@@ -64,11 +64,11 @@ $(document).ready(function () {
         var rowHeights = 0;
         $('.row-fluid').map(function (i, e) {
             var $e = $(e);
-            rowHeights += $e.is('#test') ? 0 : $e.height();
+            rowHeights += $e.is('.leaf-box.max-height') ? 0 : $e.height();
         });
         var h = $(window).height() - rowHeights - 70;
-        $('#test textarea').height(h);
-        $('#test .cont').height(h);
+        $('.leaf-box.max-height textarea').height(h);
+        $('.leaf-box.max-height .cont').height(h);
     };
     $(window).resize(resize);
     resize();
