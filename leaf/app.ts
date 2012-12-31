@@ -42,8 +42,10 @@ $(document).ready(() => {
         // Draw tree, add hooks for updating it
         var iState = new Interpreter.State($codebox.val());
         var v = UI.drawTree($cont, iState);
+        var lastCodeText = $codebox.val();;
         $codebox.bind('recompile', e => {
             iState = new Interpreter.State($codebox.val());
+            lastCodeText = $codebox.val();
             $cont.trigger('redraw');
         });
         $cont.bind('redraw', e => {
@@ -55,10 +57,18 @@ $(document).ready(() => {
         });
         // Add hooks for buttons
         $stepBtn.click(() => {
+            if (lastCodeText !== $codebox.val()) {
+                $codebox.trigger('recompile');
+                return;
+            }
             iState = Interpreter.step(iState);
             $cont.trigger('redraw');
         });
         $runBtn.click(() => {
+            if (lastCodeText !== $codebox.val()) {
+                $codebox.trigger('recompile');
+                return;
+            }
             iState = Interpreter.run(iState);
             $cont.trigger('redraw');
         });

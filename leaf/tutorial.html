@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>TypeScript HTML App</title>
+    <link rel="stylesheet" href="Scripts/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="Scripts/jquery-1.8.3.js"></script>
+    <script src="Scripts/jquery.ba-resize.js"></script>
+    <script src="Scripts/d3.js"></script>
+    <script src="Scripts/bootstrap/js/bootstrap.js"></script>
+    <script src="Scripts/mousetrap.min.js"></script>
+    <script src="Scripts/jquery-fieldselection.js"></script>
+    <script src="Scripts/ace.js"></script>
+    <script src="Scripts/theme-chrome.js"></script>
+    <script src="interpreter.js"></script>
+    <script src="ui.js"></script>
+    <script src="app.js"></script>
+</head>
+    <body class="container">
+        <div class="row-fluid">
+            <div class="span12">
+                <h1>Leaf: A Tree Based Turing Tarpit</h1>
+                <h2>Tutorial</h2>
+                <h3>Children</h3>
+                <p>
+                    Leaf is a Tree Based Turing Tar Pit. The only datastructure is one binary tree and a number
+                    of operations to manipulate trees. Let's jump right in with the interpreter.
+                </p>
+                <p>
+                    + creates a left child and * creates a right child. Try it out by pressing Step below:
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>+*</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <p>
+                    As you can see, the interpreter displays what is happening on the right - first a left hand child
+                    is made (helpfully coloured green) then a right one (coloured orange). Run will go through until the
+                    program finishes.
+                </p>
+                <h3>Movement</h3>
+                <p>
+                    &gt; will move to the right child and &lt; will move to the left child. If there are no children
+                    it will stay where it is. ^ will ascent to the parent, if one exists. Note the node marked green is
+                    the currently selected node.
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>+*>+*<<^^^</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>Deletion</h3>
+                <p>
+                    The - character removes the currently selected node and all it's children. The
+                    topmost node cannot be deleted.
+                </p>
+                </div>
+        </div>
+        <div class="leaf-box tute"><pre>+*>+*>---</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>Loops</h3>
+                <p>
+                    To make a loop, enclose some instructions in ( and ), ie (+^). The instructions inside the loop
+                    are executed and the condition is the last instruction (analogous to a do-while loop)
+                    <ul>
+                        <li>Movement instructions ie &lt; &gt; ^ will fail if there is no child/parent to move to.</li>
+                        <li>+ and * will always succeed. - will fail if it is the topmost node</li>
+                    </ul>
+                    For example, (^) will move up to each parent until the topmost, (>) will move to the rightmost child
+                    each iteration until it is at the rightmost node in the current subtree and similarly for (<) but to
+                    the left.
+                </p>
+                <p>
+                    The example below makes a string of right children then goes back to the top, descends via the right
+                    children and adds a left child to each node.
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>*>*>*>*>(^)(+>)</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>Rebasing</h3>
+                <p>
+                    The { sets the current root node (coloured purple on the visulisation) and } sets it back to what
+                    it was. This means you can make program fragments work on only parts of the tree, enabling
+                    operation like addition and multiplication.
+                </p>
+                <p>
+                    We do the same example as previously except that we rebase onto the third node down, preventing the 
+                    ones below it from being changed.
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>*>*>{*>*>(^)(+>)}</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>Conditional</h3>
+                <p>
+                    ? will break out of a loop (ie advance to the properly nested '(' character) if the current selected
+                    node is the current root node. It sees if you are the top of the tree, if you are it breaks out the
+                    loop. We can make a simple test to see if a left node:
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>*{(?+*)+}</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>Numerals</h3>
+                <p>
+                    We can encode a number n as a numeral by having a tree with n nodes, all right children. Ie
+                    we can encode 4 as:
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>*>*>*></pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>Numerals</h3>
+                <p>
+                    Using this, we can define addition as taking a numeral n on the right subtree and a numeral m on the left
+                    subtree and leaving a numeral (n+m):
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>*>*>*>*
+(^)+<
+*>*>*
+(^)
+
+{<(>)(?>-(^)(>)*(^)<(>))}</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>Lists</h3>
+                <p>
+                    Lists are similar to numerals - we use a numeral as a 'backbone' and 'hand' other things off each node's
+                    left subtree. The encoding of the list [0,1,2,3]:
+                </p>
+            </div>
+        </div>
+        <div class="leaf-box tute"><pre>+
+*> +<*^
+*> +<*>*^^
+*> +<*>*>*^^^</pre></div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h2>Playground</h2>
+                <h3>See <a href="default.htm">here</a> for a large playground to play with leaf</h3>
+            </div>
+        </div>
+    </body>
+</html>

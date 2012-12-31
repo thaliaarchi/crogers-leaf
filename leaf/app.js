@@ -31,8 +31,11 @@ $(document).ready(function () {
         var $cont = $belowGroup.children('.cont');
         var iState = new Interpreter.State($codebox.val());
         var v = UI.drawTree($cont, iState);
+        var lastCodeText = $codebox.val();
+        ; ;
         $codebox.bind('recompile', function (e) {
             iState = new Interpreter.State($codebox.val());
+            lastCodeText = $codebox.val();
             $cont.trigger('redraw');
         });
         $cont.bind('redraw', function (e) {
@@ -43,10 +46,18 @@ $(document).ready(function () {
             v = UI.resizeTreeBox(v, $cont.width(), $cont.height());
         });
         $stepBtn.click(function () {
+            if(lastCodeText !== $codebox.val()) {
+                $codebox.trigger('recompile');
+                return;
+            }
             iState = Interpreter.step(iState);
             $cont.trigger('redraw');
         });
         $runBtn.click(function () {
+            if(lastCodeText !== $codebox.val()) {
+                $codebox.trigger('recompile');
+                return;
+            }
             iState = Interpreter.run(iState);
             $cont.trigger('redraw');
         });

@@ -40,6 +40,7 @@
     <Content Include="Scripts\jquery.ba-resize.js" />
     <Content Include="Scripts\mousetrap.d.ts" />
     <Content Include="Scripts\mousetrap.min.js" />
+    <Content Include="tutorial.html" />
     <Content Include="ui.js">
       <DependentUpon>ui.ts</DependentUpon>
     </Content>

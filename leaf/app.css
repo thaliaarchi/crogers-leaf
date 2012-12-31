@@ -8,6 +8,10 @@
     padding: 10px 0;
 }
 
+.leaf-box.tute, .leaf-box.tute .cont, .leaf-box.tute textarea {
+    height: 300px;
+}
+
 .leaf-box textarea {
     box-sizing: border-box;
     width: 100%;
