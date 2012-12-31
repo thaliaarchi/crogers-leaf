@@ -27,6 +27,7 @@
     <Content Include="app.js">
       <DependentUpon>app.ts</DependentUpon>
     </Content>
+    <Content Include="Scripts\ace.js" />
     <Content Include="Scripts\bootstrap\css\bootstrap-responsive.css" />
     <Content Include="Scripts\bootstrap\css\bootstrap-responsive.min.css" />
     <Content Include="Scripts\bootstrap\css\bootstrap.css" />
@@ -37,9 +38,11 @@
     <Content Include="Scripts\d3.js" />
     <Content Include="Scripts\jquery-1.8.3.d.ts" />
     <Content Include="Scripts\jquery-1.8.3.js" />
+    <Content Include="Scripts\jquery-fieldselection.js" />
     <Content Include="Scripts\jquery.ba-resize.js" />
     <Content Include="Scripts\mousetrap.d.ts" />
     <Content Include="Scripts\mousetrap.min.js" />
+    <Content Include="Scripts\theme-chrome.js" />
     <Content Include="ui.js">
       <DependentUpon>ui.ts</DependentUpon>
     </Content>

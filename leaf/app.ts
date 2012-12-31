@@ -4,6 +4,18 @@
 ///<reference path="Scripts/mousetrap.d.ts" />
 
 $(document).ready(() => {
+    function selectTextRange(element: any, start: number, end: number) {
+        if(element.setSelectionRange)
+            element.setSelectionRange(start, end);
+        else {
+            var r = element.createTextRange();
+            r.collapse(true);
+            r.moveEnd('character', end);
+            r.moveStart('character', start);
+            r.select();   
+        }
+    }
+
     $('.leaf-box').each((i, e) => {
         var $e = $(e);
         // Get the initial program test
@@ -36,6 +48,7 @@ $(document).ready(() => {
         });
         $cont.bind('redraw', e => {
             v = UI.updateTree(v, iState);
+            selectTextRange($codebox[0], Math.max(iState.i-1,0), iState.i);
         });
         $cont.resize(() => {
             v = UI.resizeTreeBox(v, $cont.width(), $cont.height());

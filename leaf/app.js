@@ -1,4 +1,15 @@
 $(document).ready(function () {
+    function selectTextRange(element, start, end) {
+        if(element.setSelectionRange) {
+            element.setSelectionRange(start, end);
+        } else {
+            var r = element.createTextRange();
+            r.collapse(true);
+            r.moveEnd('character', end);
+            r.moveStart('character', start);
+            r.select();
+        }
+    }
     $('.leaf-box').each(function (i, e) {
         var $e = $(e);
         var initText = $e.text();
@@ -26,6 +37,7 @@ $(document).ready(function () {
         });
         $cont.bind('redraw', function (e) {
             v = UI.updateTree(v, iState);
+            selectTextRange($codebox[0], Math.max(iState.i - 1, 0), iState.i);
         });
         $cont.resize(function () {
             v = UI.resizeTreeBox(v, $cont.width(), $cont.height());
