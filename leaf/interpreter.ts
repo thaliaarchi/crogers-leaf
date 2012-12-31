@@ -1,8 +1,8 @@
-function peek(arr) {
-    return arr[arr.length - 1];
-}
-
 module Interpreter {
+
+    export function peek(arr) {
+        return arr[arr.length - 1];
+    }
 
     export class Tree {
         id: string;
@@ -20,19 +20,17 @@ module Interpreter {
             this.right = tree;
         }
 
-        private annotateIdsInternal(prefix:string, selectedTree: Tree) {
+        private annotateIdsInternal(prefix:string) {
             this.id = prefix;
-            if (this === selectedTree)
-                this.id += 'S';
             if (this.left)
-                this.left.annotateIdsInternal(prefix + 'L', selectedTree);
+                this.left.annotateIdsInternal(prefix + 'L');
             if (this.right)
-                this.right.annotateIdsInternal(prefix + 'R', selectedTree);
+                this.right.annotateIdsInternal(prefix + 'R');
 
         }
 
-        public annotateIds(selectedTree: Tree) {
-            return this.annotateIdsInternal('', selectedTree);
+        public annotateIds() {
+            return this.annotateIdsInternal('');
         }
 
         static empty() { return new Tree(); }
@@ -191,8 +189,7 @@ module Interpreter {
         return s;
     }
 
-    export function run(code: string) {
-        var s = new State(code);
+    export function run(s: State) {
         while (!s.finished) {
             s = step(s);
         }

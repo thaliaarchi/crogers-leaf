@@ -52,27 +52,28 @@ var UI;
         var duration = 500;
         var diagonal = d3.svg.diagonal();
         var nodes = treeLayout.nodes(tree);
-        tree.annotateIds(state.tree);
+        tree.annotateIds();
         var node = vis.selectAll('g.node').data(nodes, function (d) {
             return d.id;
         });
         var nodeEnter = node.enter().append('g').attr('class', 'node').attr('transform', function (d) {
             return translate(d.x, d.y);
         }).style('opacity', 0);
-        nodeEnter.append('circle').attr('r', 5).style('fill', function (n) {
-            return n === state.tree ? 'green' : 'black';
-        });
+        nodeEnter.append('circle').attr('r', 5);
         var nodeUpdate = node.transition().duration(duration).attr('transform', function (d) {
             return translate(d.x, d.y);
-        }).style('opacity', 1).style('fill', function (n) {
-            return n === state.tree ? 'green' : 'black';
+        }).style('opacity', 1);
+        node.style('fill', function (n) {
+            return n === state.tree ? 'green' : (n === Interpreter.peek(state.rootStack) ? 'purple' : 'black');
         });
         var nodeExit = node.exit().remove();
         var link = vis.selectAll('path.link').data(treeLayout.links(nodes), function (d) {
             return d.source.id + '_' + d.target.id;
         });
-        var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal).style('opacity', 0);
-        var linkUpate = link.transition().duration(duration).attr('d', diagonal).style('opacity', 1);
+        var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal).style('opacity', 0).style('stroke', function (l) {
+            return Interpreter.peek(l.target.id) === 'R' ? '#D1B4B4' : '#B5D1B4';
+        });
+        var linkUpate = link.transition().duration(duration).attr('d', diagonal).style('opacity', 0.5);
         var linkExit = link.exit().remove();
         visData.lastState = state;
         return visData;

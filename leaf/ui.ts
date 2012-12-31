@@ -67,7 +67,7 @@ module UI {
         var nodes = treeLayout.nodes(tree);       
         
         // very important
-        tree.annotateIds(state.tree);
+        tree.annotateIds();
 
         var node = vis.selectAll('g.node')
             .data(nodes, d => d.id);
@@ -78,14 +78,14 @@ module UI {
             .style('opacity', 0);
 
         nodeEnter.append('circle')
-            .attr('r', 5)
-            .style('fill', n => n === state.tree ? 'green' : 'black');
+            .attr('r', 5);
 
         var nodeUpdate = node.transition()
             .duration(duration)
             .attr('transform', d => translate(d.x, d.y))
-            .style('opacity', 1)
-            .style('fill', n => n === state.tree ? 'green' : 'black');
+            .style('opacity', 1);
+
+        node.style('fill', n => n === state.tree ? 'green' : (n === Interpreter.peek(state.rootStack) ? 'purple' : 'black'));
 
         var nodeExit = node.exit().remove();
         
@@ -95,12 +95,13 @@ module UI {
         var linkEnter = link.enter().insert('path', 'g')
             .attr('class', 'link')
             .attr('d', diagonal)
-            .style('opacity', 0);
+            .style('opacity', 0)
+            .style('stroke', l => Interpreter.peek(l.target.id) === 'R' ? '#D1B4B4' : '#B5D1B4');
 
         var linkUpate = link.transition()
             .duration(duration)
             .attr('d', diagonal)
-            .style('opacity', 1);
+            .style('opacity', 0.5);
 
         var linkExit = link.exit().remove();
 

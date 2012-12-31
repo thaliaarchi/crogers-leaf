@@ -1,8 +1,9 @@
-function peek(arr) {
-    return arr[arr.length - 1];
-}
 var Interpreter;
 (function (Interpreter) {
+    function peek(arr) {
+        return arr[arr.length - 1];
+    }
+    Interpreter.peek = peek;
     var Tree = (function () {
         function Tree() { }
         Tree.prototype.setLeft = function (tree) {
@@ -13,20 +14,17 @@ var Interpreter;
             tree.parent = this;
             this.right = tree;
         };
-        Tree.prototype.annotateIdsInternal = function (prefix, selectedTree) {
+        Tree.prototype.annotateIdsInternal = function (prefix) {
             this.id = prefix;
-            if(this === selectedTree) {
-                this.id += 'S';
-            }
             if(this.left) {
-                this.left.annotateIdsInternal(prefix + 'L', selectedTree);
+                this.left.annotateIdsInternal(prefix + 'L');
             }
             if(this.right) {
-                this.right.annotateIdsInternal(prefix + 'R', selectedTree);
+                this.right.annotateIdsInternal(prefix + 'R');
             }
         };
-        Tree.prototype.annotateIds = function (selectedTree) {
-            return this.annotateIdsInternal('', selectedTree);
+        Tree.prototype.annotateIds = function () {
+            return this.annotateIdsInternal('');
         };
         Tree.empty = function empty() {
             return new Tree();
@@ -209,8 +207,7 @@ var Interpreter;
         return s;
     }
     Interpreter.step = step;
-    function run(code) {
-        var s = new State(code);
+    function run(s) {
         while(!s.finished) {
             s = step(s);
         }
