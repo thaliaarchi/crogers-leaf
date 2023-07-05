@@ -111,7 +111,7 @@ module Interpreter {
                 return i;
         }
 
-        return -1;
+        return str.length;
     }
 
     export function step(s: State) {
@@ -179,8 +179,10 @@ module Interpreter {
             
             case '?':
                 s.r = peek(s.rootStack) === s.tree;
-                if (s.r)
+                if (s.r) {
                     s.i = seek(s.code, s.i + 1, ')');
+                    s.whileStack.pop();
+                }
                 break;
         }
 

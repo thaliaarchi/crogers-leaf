@@ -113,7 +113,7 @@ var Interpreter;
                 }
             }
         }
-        return -1;
+        return str.length;
     }
     function step(s) {
         if(s.finished || s.i >= s.code.length) {
@@ -198,6 +198,7 @@ var Interpreter;
                 s.r = peek(s.rootStack) === s.tree;
                 if(s.r) {
                     s.i = seek(s.code, s.i + 1, ')');
+                    s.whileStack.pop();
                 }
                 break;
 
