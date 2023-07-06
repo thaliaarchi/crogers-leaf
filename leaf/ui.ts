@@ -85,7 +85,9 @@ module UI {
             .attr('transform', d => translate(d.x, d.y))
             .style('opacity', 1);
 
-        node.style('fill', n => n === state.tree ? 'green' : (n === Interpreter.peek(state.rootStack) ? 'purple' : 'black'));
+        node.style('fill', n => n === state.tree ? 'limegreen' : (state.rootStack.indexOf(n) >= 0 ? 'palevioletred' : 'black'))
+            .style('stroke', 'white')
+            .style('stroke-width', '1px');
 
         var nodeExit = node.exit().remove();
         
@@ -95,13 +97,14 @@ module UI {
         var linkEnter = link.enter().insert('path', 'g')
             .attr('class', 'link')
             .attr('d', diagonal)
-            .style('opacity', 0)
-            .style('stroke', l => Interpreter.peek(l.target.id) === 'R' ? '#D1B4B4' : '#B5D1B4');
+            .attr('stroke', 'black')
+            .attr('stroke-dasharray', l => Interpreter.peek(l.target.id) === 'R' ? '4 4' : '')
+            .style('opacity', 0);
 
-        var linkUpate = link.transition()
+        var linkUpdate = link.transition()
             .duration(duration)
             .attr('d', diagonal)
-            .style('opacity', 0.5);
+            .style('opacity', 1);
 
         var linkExit = link.exit().remove();
 

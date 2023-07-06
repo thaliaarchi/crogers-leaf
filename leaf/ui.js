@@ -64,16 +64,16 @@ var UI;
             return translate(d.x, d.y);
         }).style('opacity', 1);
         node.style('fill', function (n) {
-            return n === state.tree ? 'green' : (n === Interpreter.peek(state.rootStack) ? 'purple' : 'black');
-        });
+            return n === state.tree ? 'limegreen' : (state.rootStack.indexOf(n) >= 0 ? 'palevioletred' : 'black');
+        }).style('stroke', 'white').style('stroke-width', '1px');
         var nodeExit = node.exit().remove();
         var link = vis.selectAll('path.link').data(treeLayout.links(nodes), function (d) {
             return d.source.id + '_' + d.target.id;
         });
-        var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal).style('opacity', 0).style('stroke', function (l) {
-            return Interpreter.peek(l.target.id) === 'R' ? '#D1B4B4' : '#B5D1B4';
-        });
-        var linkUpate = link.transition().duration(duration).attr('d', diagonal).style('opacity', 0.5);
+        var linkEnter = link.enter().insert('path', 'g').attr('class', 'link').attr('d', diagonal).style('stroke', 'black').attr('stroke-dasharray', function (l) {
+            return Interpreter.peek(l.target.id) === 'R' ? '4 4' : '';
+        }).style('opacity', 0);
+        var linkUpdate = link.transition().duration(duration).attr('d', diagonal).style('opacity', 1);
         var linkExit = link.exit().remove();
         visData.lastState = state;
         return visData;
