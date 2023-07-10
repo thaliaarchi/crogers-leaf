@@ -23,7 +23,7 @@
   <ItemGroup>
     <Content Include="app.css" />
     <TypeScriptCompile Include="app.ts" />
-    <Content Include="default.htm" />
+    <Content Include="playground.html" />
     <Content Include="app.js">
       <DependentUpon>app.ts</DependentUpon>
     </Content>

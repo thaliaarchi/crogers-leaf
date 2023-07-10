@@ -1,8 +1,6 @@
 Leaf: A Tree Based Turing Tarpit
 ===
 
-[Tutorial (interactive!)/Explanation Here](http://crogers.github.com/leaf/tutorial.html)
----
+[Tutorial (interactive!)/explanation here](https://crogers.github.io/leaf/tutorial.html)
 
-[Playground Here](http://crogers.github.com/leaf/default.htm)
----
+[Playground here](https://crogers.github.io/leaf/playground.html)
