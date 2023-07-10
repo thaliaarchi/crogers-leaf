@@ -148,8 +148,10 @@ var Interpreter;
 
             }
             case '}': {
-                s.rootStack.pop();
-                s.r = true;
+                s.r = s.rootStack.length > 1;
+                if(s.r) {
+                    s.rootStack.pop();
+                }
                 break;
 
             }
@@ -181,14 +183,16 @@ var Interpreter;
 
             }
             case '-': {
-                var deleted = s.tree;
-                s.tree = s.tree.parent;
-                s.r = s.tree.parent;
-                if(s.tree && s.tree.left === deleted) {
-                    s.tree.left = null;
-                } else {
-                    if(s.tree.right === deleted) {
-                        s.tree.right = null;
+                s.r = peek(s.rootStack) !== s.tree;
+                if(s.r) {
+                    var deleted = s.tree;
+                    s.tree = s.tree.parent;
+                    if(s.tree.left === deleted) {
+                        s.tree.left = null;
+                    } else {
+                        if(s.tree.right === deleted) {
+                            s.tree.right = null;
+                        }
                     }
                 }
                 break;
